@@ -30,7 +30,7 @@ jobs:
   release-matrix:
     needs: [create-release]
     runs-on: ${{ matrix.config.os }}
-    container: "ubuntu:20.04"
+    container: "ubuntu:22.04"
     strategy:
       matrix:
         config:
