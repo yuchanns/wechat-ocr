@@ -30,6 +30,7 @@ jobs:
   release-matrix:
     needs: [create-release]
     runs-on: ${{ matrix.config.os }}
+    container: "python:3.12-slim"
     strategy:
       matrix:
         config:
