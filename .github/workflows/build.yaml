@@ -36,8 +36,10 @@ jobs:
         config:
           - os: ubuntu-24.04
             arch: x86_64
+            libarch: x86_64-linux-gnu
           - os: ubuntu-24.04-arm
             arch: arm64
+            libarch: aarch64-linux-gnu
     steps:
       - uses: actions/checkout@v4
       - name: Install GCC
@@ -64,7 +66,7 @@ jobs:
             -DPython_EXECUTABLE=/usr/bin/python3.9 \
             -DPython_ROOT=/usr \
             -DPython_INCLUDE_DIR=/usr/include/python3.9 \
-            -DPython_LIBRARY=/usr/lib/x86_64-linux-gnu/libpython3.9.so
+            -DPython_LIBRARY=/usr/lib/${{ matrix.config.libarch }}/libpython3.9.so
           make pywcocr -j$(nproc)
       - name: Package
         run: |
