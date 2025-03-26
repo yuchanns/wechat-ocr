@@ -44,8 +44,9 @@ jobs:
         env:
           DEBIAN_FRONTEND: nointeractive
         run: |
-          add-apt-repository ppa:deadsnakes/ppa
           apt update
+          apt install -y software-properties-common
+          add-apt-repository ppa:deadsnakes/ppa
           apt install -y build-essential cmake make
           apt install -y gcc-10 g++-10 git
           apt install -y python3.9 python3.9-dev
