@@ -24,7 +24,7 @@ jobs:
         with:
           draft: true
           name: test39
-          tag: v0.0.1
+          tag: v0.0.2
           body: "test for python3.9"
 
   release-matrix:
