@@ -44,7 +44,8 @@ jobs:
         run: |
           apt update
           apt install -y build-essential cmake make
-          apt install -y gcc-10 g++-10
+          apt install -y gcc-10 g++-10 git
+          ldd --version # check glibc version
       - name: Set GCC 10 as default
         run: |
           update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 100
