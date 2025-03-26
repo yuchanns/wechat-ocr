@@ -60,7 +60,11 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake ..
+          cmake .. \
+            -DPython_EXECUTABLE=/usr/bin/python3.9 \
+            -DPython_ROOT=/usr \
+            -DPython_INCLUDE_DIR=/usr/include/python3.9 \
+            -DPython_LIBRARY=/usr/lib/x86_64-linux-gnu/libpython3.9.so
           make pywcocr -j$(nproc)
       - name: Package
         run: |
