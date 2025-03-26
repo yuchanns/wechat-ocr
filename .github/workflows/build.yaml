@@ -62,7 +62,7 @@ jobs:
     permissions:
       contents: write
     runs-on: ubuntu-20.04
-    needs: [create-release, releases-matrix]
+    needs: [create-release, release-matrix]
 
     steps:
       - name: Publish Release
