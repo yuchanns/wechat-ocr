@@ -29,13 +29,14 @@ jobs:
 
   release-matrix:
     needs: [create-release]
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.config.os }}
     strategy:
       matrix:
-        - os: ubuntu-20.04
-          arch: x86_64
-        - os: ubuntu-20.04-arm
-          arch: arm64
+        config:
+          - os: ubuntu-20.04
+            arch: x86_64
+          - os: ubuntu-20.04-arm
+            arch: arm64
     steps:
       - uses: actions/checkout@v4
       - name: Set up build tools
@@ -48,15 +49,15 @@ jobs:
           make pywcocr -j$(nproc)
       - name: Package
         run: |
-          tar zcvf wcocr.cpython-${{ matrix.arch }}-linux-gnu.tar.gz build/wcocr.cpython*.so
+          tar zcvf wcocr.cpython-${{ matrix.config.arch }}-linux-gnu.tar.gz build/wcocr.cpython*.so
       - name: Upload Assets
         uses: shogo82148/actions-upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ASSET_NAME: wcocr.cpython-${{ matrix.arch }}-linux-gnu.tar.gz
+          ASSET_NAME: wcocr.cpython-${{ matrix.config.arch }}-linux-gnu.tar.gz
         with:
           upload_url: ${{ needs.create-release.outputs.release_upload_url }}
-          asset_path: wcocr.cpython-${{ matrix.arch }}-linux-gnu.tar.gz
+          asset_path: wcocr.cpython-${{ matrix.config.arch }}-linux-gnu.tar.gz
   publish-release:
     permissions:
       contents: write
