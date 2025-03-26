@@ -41,6 +41,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install GCC
+        env:
+          DEBIAN_FRONTEND: nointeractive
         run: |
           apt update
           apt install -y build-essential cmake make
