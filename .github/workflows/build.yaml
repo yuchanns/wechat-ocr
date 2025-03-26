@@ -1,0 +1,80 @@
+name: Build
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  create-release:
+    permissions:
+      contents: write
+    runs-on: ubuntu-20.04
+    outputs:
+      release_id: ${{ steps.create-release.outputs.id }}
+      release_upload_url: ${{ steps.create-release.outputs.upload_url }}
+      release_body: "${{ steps.tag.outputs.message }}"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create Release
+        id: create-release
+        uses: ncipollo/release-action@v1
+        with:
+          draft: true
+          name: test
+          tag: v0.0.1
+          body: "test"
+
+  release-matrix:
+    needs: [create-release]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        - os: ubuntu-20.04
+          arch: x86_64
+        - os: ubuntu-20.04-arm
+          arch: arm64
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up build tools
+        run: sudo apt-get install -y build-essential cmake make g++
+      - name: Build
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+          make pywcocr -j$(nproc)
+      - name: Package
+        run: |
+          tar zcvf wcocr.cpython-${{ matrix.arch }}-linux-gnu.tar.gz build/wcocr.cpython*.so
+      - name: Upload Assets
+        uses: shogo82148/actions-upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ASSET_NAME: wcocr.cpython-${{ matrix.arch }}-linux-gnu.tar.gz
+        with:
+          upload_url: ${{ needs.create-release.outputs.release_upload_url }}
+          asset_path: wcocr.cpython-${{ matrix.arch }}-linux-gnu.tar.gz
+  publish-release:
+    permissions:
+      contents: write
+    runs-on: ubuntu-20.04
+    needs: [create-release, releases-matrix]
+
+    steps:
+      - name: Publish Release
+        id: publish-release
+        uses: actions/github-script@v6
+        env:
+          release_id: ${{ needs.create-release.outputs.release_id }}
+        with:
+          script: |
+            github.rest.repos.updateRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: process.env.release_id,
+              draft: false,
+              prerelease: false
+            })
